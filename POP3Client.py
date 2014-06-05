@@ -1,4 +1,5 @@
 import getpass
+import re
 import socket
 import sys
 
@@ -38,6 +39,31 @@ def send_and_print(mes, s):
     print(s.recv(2048).decode('utf-8'))
 
 
+def get_subj(s):
+    result = ''
+    for ln in s:
+        r = re.compile('')
+    return ''
+
+
+def get_result(m):
+    subj = ''
+    addr = ''
+    lines_in_m = m.split('\r\n')
+    for ln in lines_in_m:
+        if ln.startswith('From: '):
+            addr = ln
+            break
+    for i in range(len(lines_in_m)):
+        if lines_in_m[i].startswith('Subject: '):
+            ln = lines_in_m[i][9:]
+            j = ++i
+            while lines_in_m[i].startswith(' '):
+                ++j
+            subj = get_subj(lines_in_m[i: j].append(ln))
+    return [subj, addr]
+
+
 def main():
     global host, port, auto
     get_args()
@@ -67,9 +93,10 @@ def main():
         if m != '' and m != '.':
             number = m.split(' ')[0]
             send_m('top {0} 0'.format(number), sock)
-            re = sock.recv(2048)
-            while not re.endswith(b'\r\n.\r\n'):
-                re += sock.recv(2048)
-            print(re)
+            ans = sock.recv(2048)
+            while not ans.endswith(b'\r\n.\r\n'):
+                ans += sock.recv(2048)
+            subj, addr = get_result(ans.decode('cp852'))
+
 
 main()
