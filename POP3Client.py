@@ -1,3 +1,4 @@
+import base64
 import getpass
 import re
 import socket
@@ -42,25 +43,29 @@ def send_and_print(mes, s):
 def get_subj(s):
     result = ''
     for ln in s:
-        r = re.compile('')
-    return ''
+        g = re.match('.*=\?([^\?]+)\?([^\?]+)\?([^\?]+)\?=', ln)
+        encoding = g.group(1)
+        text = g.group(3)
+        text = base64.b64decode(text).decode(encoding)
+        result += text
+    return result
 
 
 def get_result(m):
     subj = ''
     addr = ''
-    lines_in_m = m.split('\r\n')
+    lines_in_m = m.split('\n')
     for ln in lines_in_m:
-        if ln.startswith('From: '):
+        if ln.startswith('From:'):
             addr = ln
             break
-    for i in range(len(lines_in_m)):
-        if lines_in_m[i].startswith('Subject: '):
-            ln = lines_in_m[i][9:]
-            j = ++i
+    for i in range(0, len(lines_in_m)):
+        if lines_in_m[i].startswith('Subject:'):
+            j = i + 1
             while lines_in_m[i].startswith(' '):
                 ++j
-            subj = get_subj(lines_in_m[i: j].append(ln))
+            subj = 'Subject: ' + get_subj(lines_in_m[i: j])
+            break
     return [subj, addr]
 
 
@@ -97,6 +102,7 @@ def main():
             while not ans.endswith(b'\r\n.\r\n'):
                 ans += sock.recv(2048)
             subj, addr = get_result(ans.decode('cp852'))
+            print('{0}\n{1}'.format(addr, subj))
 
 
 main()
