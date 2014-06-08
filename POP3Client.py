@@ -41,18 +41,6 @@ def send_and_print(mes, s):
     print(s.recv(2048).decode('utf-8'))
 
 
-def get_subj(s):
-    result = ''
-    for ln in s:
-        g = re.match('.*=\?([^\?]+)\?([^\?]+)\?([^\?]+).*', ln)
-        encoding = g.group(1)
-        text = g.group(3)
-        text = base64.b64decode(text.encode('utf-8'))
-        print(text)
-        result += text.decode(encoding)
-    return result
-
-
 def decode(input_str):
     result = ''
     decoded = re.search('=\?([^\?]*)\?([^\?]*)\?([^\?]*)\?=', input_str)
