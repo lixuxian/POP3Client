@@ -49,12 +49,12 @@ def decode(input_str):
         s = search_result.start(0)
         e = search_result.end(0)
         text = text.encode('cp866', 'ignore').decode('cp866', 'ignore')
+        result += input_str[:s]
+        input_str = input_str[e:].lstrip()
         if tp.lower() != 'q':
-            result += input_str[:s] + base64.b64decode(text.encode('cp866')).decode(charset, 'ignore')
-            input_str = input_str[e:].lstrip()
+            result += base64.b64decode(text.encode('cp866')).decode(charset, 'ignore')
         else:
-            result += input_str[:s] + quopri.decodestring(text).decode(charset, 'ignore')
-            input_str = input_str[e:].lstrip()
+            result += quopri.decodestring(text).decode(charset, 'ignore')
         search_result = re.search('=\?([^\?]*)\?([^\?]*)\?([^\?]*)\?=', input_str)
     else:
         result += input_str
