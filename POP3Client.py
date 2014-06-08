@@ -43,17 +43,19 @@ def send_and_print(mes, s):
 
 def decode(input_str):
     result = ''
-    decoded = re.search('=\?([^\?]*)\?([^\?]*)\?([^\?]*)\?=', input_str)
-    while decoded is not None:
-        charset, tp, text = decoded.groups()
+    search_result = re.search('=\?([^\?]*)\?([^\?]*)\?([^\?]*)\?=', input_str)
+    while search_result is not None:
+        charset, tp, text = search_result.groups()
+        s = search_result.start(0)
+        e = search_result.end(0)
         text = text.encode('cp866', 'ignore').decode('cp866', 'ignore')
         if tp.lower() != 'q':
-            result += input_str[:decoded.start(0)] + base64.b64decode(text.encode('cp866')).decode(charset, 'ignore')
-            input_str = input_str[decoded.end(0):].lstrip()
+            result += input_str[:s] + base64.b64decode(text.encode('cp866')).decode(charset, 'ignore')
+            input_str = input_str[e:].lstrip()
         else:
-            result += input_str[:decoded.start(0)] + quopri.decodestring(text).decode(charset, 'ignore')
-            input_str = input_str[decoded.end(0):].lstrip()
-        decoded = re.search('=\?([^\?]*)\?([^\?]*)\?([^\?]*)\?=', input_str)
+            result += input_str[:s] + quopri.decodestring(text).decode(charset, 'ignore')
+            input_str = input_str[e:].lstrip()
+        search_result = re.search('=\?([^\?]*)\?([^\?]*)\?([^\?]*)\?=', input_str)
     else:
         result += input_str
     return result
